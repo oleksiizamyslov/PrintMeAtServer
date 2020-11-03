@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Core;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PrintMeAtServer.API.Controllers
@@ -9,9 +10,9 @@ namespace PrintMeAtServer.API.Controllers
     [ApiController]
     public class PrintMeController : ControllerBase
     {
-        private readonly IPrintMeService _printMeService;
+        private readonly IPrintMeAtService _printMeService;
 
-        public PrintMeController(IPrintMeService printMeService)
+        public PrintMeController(IPrintMeAtService printMeService)
         {
             _printMeService = printMeService;
         }
@@ -21,10 +22,10 @@ namespace PrintMeAtServer.API.Controllers
             var newMessage = new Message(dateTime, message);
             if (message != null)
             {
-                await _printMeService.AddMessage(newMessage);
+                await _printMeService.EnqueueMessage(newMessage);
             }
 
-            return $"Scheduled at {OneOffTimer.DTO} \r\n {MessageProcessor.Str}";
+            return $"Scheduled at \r\n {MessageProcessor.Str}";
         }
     }
 }

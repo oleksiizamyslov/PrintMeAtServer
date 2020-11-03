@@ -1,12 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Core;
+﻿using System.Threading.Tasks;
 
-namespace PrintMeAtServer
+namespace Core.Interfaces
 {
-    public interface IScheduledMessageService : IDisposable
+    public interface IPrintMeAtService
     {
         Task EnqueueMessage(Message message);
-        Task Initialize();
+
     }
 }

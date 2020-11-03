@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Core;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,18 +26,23 @@ namespace PrintMeAtServer
             
             services.AddTransient<IServerConfiguration, ServerConfiguration>();
             services.AddTransient<IRedisConfiguration, RedisConfiguration>();
-            services.AddTransient<IPrintMeService, PrintMeService>();
+            services.AddTransient<IPrintMeAtService, PrintMeAtService>();
             services.AddTransient<IMessageSerializer, MessageSerializer>();
-            services.AddTransient<IPersistentMessageQueue, PersistentRedisMessageQueue>();
+            services.AddTransient<IMessageQueue, PersistentRedisMessageQueue>();
+            services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
-            services.AddSingleton<IScheduledMessageService, ScheduledMessageService>(sp =>
+            services.AddSingleton<ISchedulingService, SchedulingService>(sp =>
             {
-                var ret = new ScheduledMessageService(sp.GetService<IMessageProcessor>(),
-                    sp.GetService<IPersistentMessageQueue>());
+                var ret = new SchedulingService(
+                    sp.GetService<IMessageQueue>(), 
+                    sp.GetService<IMessageProcessor>(),
+                    sp.GetService<IDateTimeProvider>());
                 ret.Initialize().GetAwaiter().GetResult();
                 return ret;
             });
+
+            services.AddTransient<IPrintMeAtService, PrintMeAtService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

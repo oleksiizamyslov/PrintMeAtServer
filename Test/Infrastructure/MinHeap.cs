@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Core.DataStructures
 {
@@ -6,8 +7,10 @@ namespace Core.DataStructures
     /// Array-based Heap implementation.
     /// </summary>
     /// <typeparam name="T">Kind of thing being stored in the heap.</typeparam>
-    public class Heap<T> where T : IComparable<T>
+    public class Heap<T> 
     {
+        private readonly IComparer<T> _comparer;
+
         private enum HeapType
         {
             Min,
@@ -23,8 +26,9 @@ namespace Core.DataStructures
         /// </summary>
         /// <param name="minSize">The minimum number of elements the heap is expected to hold.</param>
         /// <param name="isMaxHeap">If "true", this is a Max Heap, where the largest values rise to the top. Otherwise, this is a Min Heap.</param>
-        public Heap(int minSize, bool isMaxHeap = false)
+        public Heap(IComparer<T> comparer, int minSize, bool isMaxHeap = false)
         {
+            _comparer = comparer;
             _heapType = isMaxHeap ? HeapType.Max : HeapType.Min;
             _heap = new T[((int)Math.Pow(2, Math.Ceiling(Math.Log(minSize, 2))))];
         }
@@ -137,7 +141,7 @@ namespace Core.DataStructures
         {
             T initial = _heap[initialIndex];
             T contender = _heap[contenderIndex];
-            int value = initial.CompareTo(contender);
+            int value = _comparer.Compare(initial, contender);
             if (_heapType == HeapType.Max) value = -value;
             return value;
         }

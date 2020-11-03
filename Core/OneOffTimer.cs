@@ -6,62 +6,58 @@ namespace Core
     public class OneOffTimer:IDisposable
     {
         private readonly Action _action;
+        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly Timer _timer;
         
-        public OneOffTimer(Action action)
+        public OneOffTimer(Action action, IDateTimeProvider dateTimeProvider)
         {
             _action = action;
+            _dateTimeProvider = dateTimeProvider;
             _timer = new Timer((st) => DoWork(), null, Timeout.Infinite, Timeout.Infinite);
             SetIdle();
         }
 
-        public DateTimeOffset CurrentScheduledTime
-        {
-            get => DTO;
-            set => DTO = value;
-        }
-        // CLEAN
-        public static DateTimeOffset DTO { get; private set; }
-
-        private DateTimeOffset MaxScheduledTime
-        {
-            get
-            {
-                const int maxDueTimeMs = Int32.MaxValue - 3;
-                return DateTimeOffset.Now.AddMilliseconds(maxDueTimeMs);
-            }
-        }
+        public DateTimeOffset CurrentlyScheduledTime { get; private set; }
 
         public void Schedule(DateTimeOffset offset)
         {
-            if (offset > MaxScheduledTime)
+            if (offset > MaxPossiblySchedulableTime)
             {
-                offset = MaxScheduledTime;
+                offset = MaxPossiblySchedulableTime;
             }
 
-            TimeSpan timeSpan = (offset - DateTimeOffset.Now);
+            TimeSpan timeSpan = (offset - _dateTimeProvider.Now);
             if (timeSpan.Ticks < 0)
             {
-                offset = DateTimeOffset.Now;
+                offset = _dateTimeProvider.Now;
                 timeSpan = TimeSpan.Zero;
             }
             
             var timeSpanMs = (long) timeSpan.TotalMilliseconds;
             
-            CurrentScheduledTime = offset;
+            CurrentlyScheduledTime = offset;
             _timer.Change(timeSpanMs, Timeout.Infinite);
         }
 
         private void SetIdle()
         {
-            CurrentScheduledTime = DateTimeOffset.MaxValue;
+            CurrentlyScheduledTime = DateTimeOffset.MaxValue;
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         private void DoWork()
         {
-            CurrentScheduledTime = DateTimeOffset.MaxValue;
+            CurrentlyScheduledTime = DateTimeOffset.MaxValue;
             _action();
+        }
+
+        private DateTimeOffset MaxPossiblySchedulableTime
+        {
+            get
+            {
+                const int maxDueTimeMs = int.MaxValue - 3; // internal limitation of System.Threading.Timer.
+                return DateTimeOffset.Now.AddMilliseconds(maxDueTimeMs);
+            }
         }
 
         public void Dispose()

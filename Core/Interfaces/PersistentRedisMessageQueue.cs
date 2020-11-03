@@ -4,7 +4,7 @@ using StackExchange.Redis;
 
 namespace Core
 {
-    public class PersistentRedisMessageQueue : IPersistentMessageQueue
+    public class PersistentRedisMessageQueue : IMessageQueue
     {
         private readonly IRedisConnectionFactory _factory;
         private readonly IMessageSerializer _serializer;
@@ -17,11 +17,6 @@ namespace Core
             _configuration = configuration;
         }
 
-        public Task Initialize()
-        {
-            return Task.CompletedTask;
-        }
-        
         public Task<Message> PeekNextScheduledMessage()
         {
             return Task.FromResult(GetLatestMessage(false));
@@ -36,7 +31,7 @@ namespace Core
             return Task.CompletedTask;
         }
 
-        public Task<Message> PopNextScheduledMessage()
+        public Task<Message> DequeueNextScheduledMessage()
         {
             return Task.FromResult(GetLatestMessage(true));
         }
