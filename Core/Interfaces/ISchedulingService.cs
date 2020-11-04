@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Core.Data
+namespace Core.Interfaces
 {
     public interface ISchedulingService
     {

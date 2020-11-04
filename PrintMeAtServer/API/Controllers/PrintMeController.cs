@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Core.Data;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using PrintMeAtServer.API.Models;
 
 namespace PrintMeAtServer.API.Controllers
 {
@@ -17,13 +18,9 @@ namespace PrintMeAtServer.API.Controllers
             _printMeService = printMeService;
         }
 
-        public async Task<ActionResult<string>> PrintMe([FromQuery] Message message)
+        public async Task<ActionResult<string>> PrintMe([FromQuery] MessageModel messageModel)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest($"Input is invalid: {ModelState.Values.SelectMany(p => p.Errors).First()}");
-            }
-            await _printMeService.EnqueueMessage(message);
+            await _printMeService.EnqueueMessage(new Message(messageModel.DateTime.Value, messageModel.MessageText));
 
             return Ok("Message queued successfully!");
         }
