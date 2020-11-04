@@ -20,6 +20,12 @@ namespace PrintMeAtServer.Core.Impl
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Simple sharding by server name is used here. This only works for dedicated, named servers.
+        /// If we will be hosting in the cloud, we will have to come up with a more stable approach than this.
+        /// </summary>
+        private string RedisKey => $"PrintMessages_{_configuration.ServerName}";
+
         public async Task<Message> PeekNextScheduledMessage()
         {
             return await GetLatestMessage(false);
@@ -60,8 +66,6 @@ namespace PrintMeAtServer.Core.Impl
 
             return message.Message;
         }
-        
-        private string RedisKey => $"PrintMessages_{_configuration.ServerName}";
 
         /// <summary>
         /// Wrap message to make sure messages with same date and text are treated as different.
