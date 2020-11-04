@@ -13,13 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\PrintMeAtServer.Core\PrintMeAtServer.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
 
     <None Update="..\.dockerignore">
-      <DependentUpon>Dockerfile</DependentUpon>
+      <DependentUpon>dockerfile</DependentUpon>
     </None>
   </ItemGroup>
 

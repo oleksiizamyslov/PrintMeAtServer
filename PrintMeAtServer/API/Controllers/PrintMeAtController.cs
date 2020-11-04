@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Core.Interfaces;
-using Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using PrintMeAtServer.API.Models;
+using PrintMeAtServer.Core.Interfaces;
+using PrintMeAtServer.Core.Models;
 
 namespace PrintMeAtServer.API.Controllers
 {
@@ -12,7 +12,6 @@ namespace PrintMeAtServer.API.Controllers
     public class PrintMeAtController : ControllerBase
     {
         private readonly IPrintMeAtService _printMeService;
-
         public PrintMeAtController(IPrintMeAtService printMeService)
         {
             _printMeService = printMeService;

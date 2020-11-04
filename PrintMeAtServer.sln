@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrintMeAtServer", "PrintMeAtServer\PrintMeAtServer.csproj", "{6B91D37B-B98E-49D9-9688-C552FE4B2D93}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{52BC31E8-EC77-43AB-BB2B-1901A6EDA650}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{C80562A5-F5DD-47BE-B2E4-32E82F31D89C}"
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{292A8C21-09A6-4023-9044-556A52FEC514}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrintMeAtServer.Core", "PrintMeAtServer.Core\PrintMeAtServer.Core.csproj", "{4C693510-6083-4796-B15C-835FFFAD5176}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrintMeAtServer.Test", "PrintMeAtServer.Test\PrintMeAtServer.Test.csproj", "{7A2CEF6A-295E-4350-87C1-5E86E0DE36A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +21,18 @@ Global
 		{6B91D37B-B98E-49D9-9688-C552FE4B2D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B91D37B-B98E-49D9-9688-C552FE4B2D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B91D37B-B98E-49D9-9688-C552FE4B2D93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52BC31E8-EC77-43AB-BB2B-1901A6EDA650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52BC31E8-EC77-43AB-BB2B-1901A6EDA650}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52BC31E8-EC77-43AB-BB2B-1901A6EDA650}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52BC31E8-EC77-43AB-BB2B-1901A6EDA650}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C80562A5-F5DD-47BE-B2E4-32E82F31D89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C80562A5-F5DD-47BE-B2E4-32E82F31D89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C80562A5-F5DD-47BE-B2E4-32E82F31D89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C80562A5-F5DD-47BE-B2E4-32E82F31D89C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{292A8C21-09A6-4023-9044-556A52FEC514}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{292A8C21-09A6-4023-9044-556A52FEC514}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{292A8C21-09A6-4023-9044-556A52FEC514}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{292A8C21-09A6-4023-9044-556A52FEC514}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C693510-6083-4796-B15C-835FFFAD5176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C693510-6083-4796-B15C-835FFFAD5176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C693510-6083-4796-B15C-835FFFAD5176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C693510-6083-4796-B15C-835FFFAD5176}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A2CEF6A-295E-4350-87C1-5E86E0DE36A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A2CEF6A-295E-4350-87C1-5E86E0DE36A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A2CEF6A-295E-4350-87C1-5E86E0DE36A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A2CEF6A-295E-4350-87C1-5E86E0DE36A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

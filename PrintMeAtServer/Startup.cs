@@ -1,11 +1,10 @@
-using Core;
-using Core.Impl;
-using Core.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PrintMeAtServer.Core.Impl;
+using PrintMeAtServer.Core.Interfaces;
 using PrintMeAtServer.MiddleWare;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 

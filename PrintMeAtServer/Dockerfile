@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["PrintMeAtServer/PrintMeAtServer.csproj", "PrintMeAtServer/"]
-COPY ["Core/Core.csproj", "Core/"]
+COPY ["PrintMeAtServer.Core/PrintMeAtServer.Core.csproj", "Core/"]
 
 RUN dotnet restore "PrintMeAtServer/PrintMeAtServer.csproj"
 COPY . .
