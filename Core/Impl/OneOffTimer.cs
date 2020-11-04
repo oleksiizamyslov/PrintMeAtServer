@@ -20,7 +20,7 @@ namespace Core.Impl
 
         public DateTimeOffset CurrentlyScheduledTime { get; private set; }
 
-        public void Schedule(DateTimeOffset offset)
+        public virtual void Reschedule(DateTimeOffset offset)
         {
             if (offset > MaxPossiblySchedulableTime)
             {
@@ -46,7 +46,7 @@ namespace Core.Impl
             _timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
-        private void DoWork()
+        protected virtual void DoWork()
         {
             CurrentlyScheduledTime = DateTimeOffset.MaxValue;
             _action();

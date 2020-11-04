@@ -6,35 +6,38 @@ using Core.Interfaces;
 
 namespace Core.Impl
 {
-    public class SchedulingService:ISchedulingService, IDisposable
+    /// <summary>
+    /// Enables messaging scheduling by continuously scheduling processing for the current message queue head.
+    /// </summary>
+    public class SchedulingService : ISchedulingService, IDisposable
     {
         private const int LOCK_TIMEOUT = 1000;
 
         private readonly IMessageQueue _messageQueue;
         private readonly IMessageProcessor _messageProcessor;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IOneOffTimer _timer;
 
-        private readonly OneOffTimer _timer;
-        private readonly SemaphoreSlim _queueHeadLock = new SemaphoreSlim(1);
-        
-        public SchedulingService(IMessageQueue messageQueue, IMessageProcessor messageProcessor, IDateTimeProvider dateTimeProvider)
+        private readonly SemaphoreSlim _queueHeadScheduleLock = new SemaphoreSlim(1);
+
+        public SchedulingService(IMessageQueue messageQueue, IMessageProcessor messageProcessor, IDateTimeProvider dateTimeProvider, ITimerFactory timerFactory)
         {
             _messageQueue = messageQueue;
             _messageProcessor = messageProcessor;
             _dateTimeProvider = dateTimeProvider;
-            _timer = new OneOffTimer(ProcessNextMessage, dateTimeProvider);
+            _timer = timerFactory.Create(ProcessNextMessage);
         }
 
         public async Task Initialize()
         {
             try
             {
-                await _queueHeadLock.WaitAsync(LOCK_TIMEOUT);
+                await _queueHeadScheduleLock.WaitAsync(LOCK_TIMEOUT);
                 await ScheduleNextPendingMessage();
             }
             finally
             {
-                _queueHeadLock.Release();
+                _queueHeadScheduleLock.Release();
             }
         }
 
@@ -45,19 +48,19 @@ namespace Core.Impl
             {
                 try
                 {
-                    await _queueHeadLock.WaitAsync(LOCK_TIMEOUT);
+                    await _queueHeadScheduleLock.WaitAsync(LOCK_TIMEOUT);
                     if (newMessageOffset < _timer.CurrentlyScheduledTime)
                     {
-                        _timer.Schedule(newMessageOffset);
+                        _timer.Reschedule(newMessageOffset);
                     }
                 }
                 finally
                 {
-                    _queueHeadLock.Release();
+                    _queueHeadScheduleLock.Release();
                 }
             }
         }
-        
+
         private async Task ScheduleNextPendingMessage()
         {
             var nextMessage = await _messageQueue.PeekNextScheduledMessage();
@@ -71,7 +74,7 @@ namespace Core.Impl
         {
             try
             {
-                await _queueHeadLock.WaitAsync(LOCK_TIMEOUT);
+                await _queueHeadScheduleLock.WaitAsync(LOCK_TIMEOUT);
 
                 var message = await _messageQueue.PeekNextScheduledMessage();
                 if (message != null)
@@ -91,7 +94,7 @@ namespace Core.Impl
             }
             finally
             {
-                _queueHeadLock.Release();
+                _queueHeadScheduleLock.Release();
             }
         }
 

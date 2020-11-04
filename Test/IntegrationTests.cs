@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
@@ -18,17 +19,17 @@ namespace Test
 
         private static readonly Message _message1 = new Message(_offset1, "M1");
         private static readonly Message _message2 = new Message(_offset2, "M2");
-        
-        private Mock<IMessageProcessor>  _messageProcessor;
+
+        private Mock<IMessageProcessor> _messageProcessor;
         private SchedulingService _schedulingService;
         private int _processedMessages;
 
         private readonly IResolveConstraint _pollingInterval = Is.True.After(3000).PollEvery(50);
 
-        private IPrintMeAtService InitializeService(IMessageQueue messageQueue, IDateTimeProvider dto)
+        private async Task<IPrintMeAtService> InitializeService(IMessageQueue messageQueue, IDateTimeProvider dto)
         {
-            _schedulingService = new SchedulingService(messageQueue, _messageProcessor.Object, dto);
-            _schedulingService.Initialize().GetAwaiter().GetResult();
+            _schedulingService = new SchedulingService(messageQueue, _messageProcessor.Object, dto, new TimerFactory(dto));
+            await _schedulingService.Initialize();
             return new PrintMeAtService(messageQueue, _schedulingService);
         }
 
@@ -48,14 +49,14 @@ namespace Test
         }
 
         [Test]
-        public void Should_Immediately_Print_Outdated_Messages_When_Starting_Up()
+        public async void Should_Immediately_Print_Outdated_Messages_When_Starting_Up()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
-            mq.EnqueueMessage(_message1);
-            mq.EnqueueMessage(_message2);
-            
-            InitializeService(mq, new MockDateTimeProvider(_offsetAfter));
+            await mq.EnqueueMessage(_message1);
+            await mq.EnqueueMessage(_message2);
+
+            await InitializeService(mq, new MockDateTimeProvider(_offsetAfter));
 
             Assert.That(() => _processedMessages == 2, _pollingInterval);
 
@@ -65,17 +66,17 @@ namespace Test
         }
 
         [Test]
-        public void Should_Schedule_And_Print_Messages_In_Batches()
+        public async void Should_Schedule_And_Print_Messages_In_Batches()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
-            var service = InitializeService(mq, mockProvider);
+            var service = await InitializeService(mq, mockProvider);
 
-            service.EnqueueMessage(_message1);
-            service.EnqueueMessage(_message2);
-            
+            await service.EnqueueMessage(_message1);
+            await service.EnqueueMessage(_message2);
+
             _messageProcessor.Verify((p) => p.Process(It.IsAny<Message>()), Times.Never);
 
             mockProvider.Now = _offset1;
@@ -87,18 +88,18 @@ namespace Test
             _messageProcessor.Verify((p) => p.Process(_message2), Times.Once);
             _messageProcessor.VerifyNoOtherCalls();
         }
-        
+
         [Test]
-        public void Should_Schedule_And_Print_Messages_As_Scheduled_Regardless_Of_Adding_Order()
+        public async void Should_Schedule_And_Print_Messages_As_Scheduled_Regardless_Of_Adding_Order()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
-            var service = InitializeService(mq, mockProvider);
+            var service = await InitializeService(mq, mockProvider);
 
-            service.EnqueueMessage(_message2);
-            service.EnqueueMessage(_message1);
+            await service.EnqueueMessage(_message2);
+            await service.EnqueueMessage(_message1);
 
             _messageProcessor.Verify((p) => p.Process(It.IsAny<Message>()), Times.Never);
             mockProvider.Now = _offset1;
@@ -112,22 +113,22 @@ namespace Test
         }
 
         [Test]
-        public void Should_Schedule_And_Print_Messages_One_By_One()
+        public async void Should_Schedule_And_Print_Messages_One_By_One()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
-            var service = InitializeService(mq, mockProvider);
+            var service = await InitializeService(mq, mockProvider);
 
-            service.EnqueueMessage(_message1);
+            await service.EnqueueMessage(_message1);
             _messageProcessor.Verify((p) => p.Process(It.IsAny<Message>()), Times.Never);
             mockProvider.Now = _offset1;
 
             Assert.That(() => _processedMessages == 1, _pollingInterval);
             _messageProcessor.Verify((p) => p.Process(_message1), Times.Once);
-            
-            service.EnqueueMessage(_message2);
+
+            await service.EnqueueMessage(_message2);
             mockProvider.Now = _offset2;
             Assert.That(() => _processedMessages == 2, _pollingInterval);
             _messageProcessor.Verify((p) => p.Process(_message2), Times.Once);
@@ -135,16 +136,16 @@ namespace Test
         }
 
         [Test]
-        public void Should_Immediately_Print_Messages_In_The_Past()
+        public async void Should_Immediately_Print_Messages_In_The_Past()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetAfter);
 
-            var service = InitializeService(mq, mockProvider);
+            var service = await InitializeService(mq, mockProvider);
 
-            service.EnqueueMessage(_message1);
-            service.EnqueueMessage(_message2);
+            await service.EnqueueMessage(_message1);
+            await service.EnqueueMessage(_message2);
 
             Assert.That(() => _processedMessages == 2, _pollingInterval);
             _messageProcessor.Verify((p) => p.Process(_message1), Times.Once);
@@ -153,24 +154,43 @@ namespace Test
         }
 
         [Test]
-        public void Should_Schedule_And_Print_Messages_Scheduled_For_Same_Time()
+        public async void Should_Schedule_And_Print_Messages_Scheduled_For_Same_Time()
         {
             TestMessageQueue mq = new TestMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
-            var service = InitializeService(mq, mockProvider);
+            var service = await InitializeService(mq, mockProvider);
 
             var sameDateMessage = new Message(_message1.DateTime, "New message");
-            service.EnqueueMessage(_message1);
-            service.EnqueueMessage(sameDateMessage);
-            
+            await service.EnqueueMessage(_message1);
+            await service.EnqueueMessage(sameDateMessage);
+
             mockProvider.Now = _offsetAfter;
 
             Assert.That(() => _processedMessages == 2, _pollingInterval);
             _messageProcessor.Verify((p) => p.Process(_message1), Times.Once);
             _messageProcessor.Verify((p) => p.Process(sameDateMessage), Times.Once);
             _messageProcessor.VerifyNoOtherCalls();
+        }
+
+        [Test]
+        public async void Should_Reschedule_When_Front_Of_The_Queue_Is_Found_To_Be_In_The_Future_On_Processing()
+        {
+            TestMessageQueue mq = new TestMessageQueue();
+
+            var mockProvider = new MockDateTimeProvider(_offsetBefore);
+
+            var service = await InitializeService(mq, mockProvider);
+
+            var farFutureMessage = new Message(DateTimeOffset.Now.AddYears(1), "Far future message");
+            await service.EnqueueMessage(farFutureMessage);
+
+            // Trigger processing immediately
+            await _schedulingService.ScheduleProcessing(DateTimeOffset.Now);
+
+            Assert.AreEqual(_processedMessages, 0);
+
         }
     }
 }

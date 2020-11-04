@@ -39,7 +39,8 @@ namespace PrintMeAtServer
                 var ret = new SchedulingService(
                     sp.GetService<IMessageQueue>(), 
                     sp.GetService<IMessageProcessor>(),
-                    sp.GetService<IDateTimeProvider>());
+                    sp.GetService<IDateTimeProvider>(),
+                    sp.GetService<ITimerFactory>());
                 ret.Initialize().GetAwaiter().GetResult();
                 return ret;
             });

@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Core;
 using Core.Data;
 using Core.Interfaces;
 
 namespace Test.Infrastructure
 {
-    public class TestMessageQueue : IMessageQueue
+    public class InMemoryMessageQueue : IMessageQueue
     {
-        private readonly Heap<Message> _sortedMessages = new Heap<Message>
+        private readonly Heap<Message> _messageHeap = new Heap<Message>
             (Comparer<Message>.Create((m1, m2) => m1.DateTime.CompareTo(m2.DateTime)), 10);
 
         private readonly object _lock = new object();
+
         public Task EnqueueMessage(Message newMessage)
         {
             lock (_lock)
             {
-                _sortedMessages.Insert(newMessage);
+                _messageHeap.Insert(newMessage);
             }
             return Task.CompletedTask;
         }
@@ -27,7 +25,7 @@ namespace Test.Infrastructure
         {
             lock (_lock)
             {
-                return Task.FromResult(_sortedMessages.Peek());
+                return Task.FromResult(_messageHeap.Peek());
             }
         }
 
@@ -36,7 +34,7 @@ namespace Test.Infrastructure
             Message message;
             lock (_lock)
             {
-                message = _sortedMessages.Remove();
+                message = _messageHeap.Remove();
             }
 
             return Task.FromResult(message);
