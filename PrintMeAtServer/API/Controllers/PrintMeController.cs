@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Core.Data;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -20,11 +21,11 @@ namespace PrintMeAtServer.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest($"Input is invalid: {ModelState.Values.SelectMany(p => p.Errors).First()}");
             }
             await _printMeService.EnqueueMessage(message);
 
-            return Ok();
+            return Ok("Message queued successfully!");
         }
     }
 }

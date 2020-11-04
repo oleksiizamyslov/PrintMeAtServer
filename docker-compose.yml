@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  printmeatserver:
+    image: ${DOCKER_REGISTRY-}printmeatserver
+    build:
+        context: .
+        dockerfile: PrintMeAtServer/Dockerfile
+    container_name: printme_server
+    depends_on: 
+        - redis
+  redis:
+    image: redis:latest
+    container_name: printme_redis
+    ports: 
+        - "6379:6379"

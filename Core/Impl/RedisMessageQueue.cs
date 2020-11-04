@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Interfaces;
@@ -9,10 +10,10 @@ namespace Core.Impl
     public class RedisMessageQueue : IMessageQueue
     {
         private readonly IRedisConnectionFactory _factory;
-        private readonly IMessageSerializer _serializer;
+        private readonly ISerializer<MessageWrapper> _serializer;
         private readonly IServerConfiguration _configuration;
 
-        public RedisMessageQueue(IRedisConnectionFactory factory, IMessageSerializer serializer, IServerConfiguration configuration)
+        public RedisMessageQueue(IRedisConnectionFactory factory, ISerializer<MessageWrapper> serializer, IServerConfiguration configuration)
         {
             _factory = factory;
             _serializer = serializer;
@@ -26,7 +27,7 @@ namespace Core.Impl
 
         public async Task EnqueueMessage(Message message)
         {
-            var serialized = await _serializer.Serialize(message);
+            var serialized = await _serializer.Serialize(new MessageWrapper(message));
             var rv = new RedisValue(serialized);
             var database = _factory.GetDatabase();
             database.SortedSetAdd(RedisKey, rv, message.DateTime.DateTime.ToOADate());
@@ -54,9 +55,29 @@ namespace Core.Impl
                 database.SortedSetRemove(RedisKey, value);
             }
 
-            return message;
+            return message.Message;
         }
         
         private string RedisKey => $"PrintMessages_{_configuration.ServerName}";
+
+        /// <summary>
+        /// Wrap message to make sure messages with same date and text are treated as different.
+        /// </summary>
+        public class MessageWrapper
+        {
+            public MessageWrapper()
+            {
+
+            }
+
+            public MessageWrapper(Message message)
+            {
+                Message = message;
+                Id = Guid.NewGuid();
+            }
+
+            public Message Message { get; set; }
+            public Guid Id { get; set; }
+        }
     }
 }

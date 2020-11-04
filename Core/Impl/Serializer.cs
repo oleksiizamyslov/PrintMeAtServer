@@ -6,15 +6,15 @@ using Core.Interfaces;
 
 namespace Core.Impl
 {
-    public class MessageSerializer : IMessageSerializer
+    public class Serializer<T> : ISerializer<T>
     {
-        public async Task<string> Serialize(Message message)
+        public async Task<string> Serialize(T obj)
         {
-            if (message == null)
+            if (obj == null)
                 return null;
             using (var stream = new MemoryStream())
             {
-                await JsonSerializer.SerializeAsync(stream, message, message.GetType());
+                await JsonSerializer.SerializeAsync(stream, obj, obj.GetType());
                 stream.Position = 0;
                 using (var reader = new StreamReader(stream))
                 {
@@ -23,12 +23,12 @@ namespace Core.Impl
             }
         }
 
-        public async Task<Message> Deserialize(string serialized)
+        public async Task<T> Deserialize(string serialized)
         {
             if (serialized == null)
-                return null;
+                return default;
             var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(serialized));
-            return await JsonSerializer.DeserializeAsync<Message>(ms);
+            return await JsonSerializer.DeserializeAsync<T>(ms);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
 using Core.Data;
 using Core.Impl;
 using Core.Interfaces;

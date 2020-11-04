@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using PrintMeAtServer.MiddleWare;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace PrintMeAtServer
@@ -29,7 +30,7 @@ namespace PrintMeAtServer
             services.AddTransient<IServerConfiguration, ServerConfiguration>();
             services.AddTransient<IRedisConfiguration, RedisConfiguration>();
             services.AddTransient<IPrintMeAtService, PrintMeAtService>();
-            services.AddTransient<IMessageSerializer, MessageSerializer>();
+            services.AddTransient(typeof(ISerializer<>), typeof(Serializer<>));
             services.AddTransient<IMessageQueue, RedisMessageQueue>();
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
             services.AddTransient<ITimerFactory, TimerFactory>();
@@ -57,6 +58,8 @@ namespace PrintMeAtServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseMiddleware<ErrorLoggingMiddleware>();
             
             app.UseHttpsRedirection();
 

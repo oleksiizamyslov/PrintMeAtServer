@@ -27,14 +27,24 @@ namespace Core.Impl
                     {
                         var endpoint = new DnsEndPoint(_configuration.RedisServerHostname,
                             _configuration.RedisServerPort);
-                        _connectionMultiplexer = ConnectionMultiplexer.Connect("redis-container:6379");
+                        try
+                        {
+                            _connectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions()
+                            {
+                                EndPoints = {endpoint}
+                            });
+                        }
+                        catch (RedisConnectionException ex)
+                        {
+                            throw new InvalidOperationException($"Unable to connect to redis server at '{_configuration.RedisServerHostname}:{_configuration.RedisServerPort}'.", ex);
+                        }
                     }
                 }
             }
 
             if (!_connectionMultiplexer.IsConnected)
             {
-                throw new InvalidOperationException($"Unable to connect to Redis instance at '{_connectionMultiplexer.GetEndPoints()[0]}'");
+                throw new InvalidOperationException($"Connection lost to Redis instance at '{_configuration.RedisServerHostname}:{_configuration.RedisServerPort}'");
             }
 
             return _connectionMultiplexer;
