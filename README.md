@@ -20,6 +20,6 @@ Some assumptions that are made by current implementation:
 - two scheduled messages with same datetime and text are considered different;
 - the order of printing for two scheduled messages with same datetime is considered undefined;
 - messages for the past datetime are printed immediately;
-- the applicatation can be hosted on multiple servers, but each message should be printed on the server it was initially received by;
+- the API could be hosted on multiple servers behind a load balancer, but each message should be printed on the server it was initially received by;
 
 The project also includes basic unittest and integration test coverage, primitive logging, exception handling and validation infrastructure that would be expanded further if this were a real project :)
