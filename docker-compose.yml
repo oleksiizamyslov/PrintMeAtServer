@@ -6,9 +6,11 @@ services:
     build:
         context: .
         dockerfile: PrintMeAtServer/Dockerfile
-    container_name: printme_server
+    container_name: printmeatserver
     depends_on: 
         - redis
+    ports: 
+        - "6378:443"
   redis:
     image: redis:latest
     container_name: printme_redis

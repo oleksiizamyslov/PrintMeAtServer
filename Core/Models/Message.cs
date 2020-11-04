@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace Core.Data
+namespace Core.Models
 {
     public class Message
     {
@@ -10,16 +9,14 @@ namespace Core.Data
         {
         }
 
-        public Message(DateTimeOffset dateTime, string text)
+        public Message(DateTimeOffset dateTime, string messageText)
         {
             DateTime = dateTime;
-            Text = text;
+            MessageText = messageText;
         }
 
-        [Required]
         public DateTimeOffset DateTime { get; set; }
 
-        [Required]
-        public string Text { get; set; }
+        public string MessageText { get; set; }
     }
 }

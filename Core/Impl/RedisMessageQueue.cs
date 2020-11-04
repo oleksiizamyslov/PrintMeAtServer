@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Core.Data;
 using Core.Interfaces;
+using Core.Models;
 using StackExchange.Redis;
 
 namespace Core.Impl
@@ -28,9 +28,12 @@ namespace Core.Impl
         public async Task EnqueueMessage(Message message)
         {
             var serialized = await _serializer.Serialize(new MessageWrapper(message));
+
             var rv = new RedisValue(serialized);
             var database = _factory.GetDatabase();
-            database.SortedSetAdd(RedisKey, rv, message.DateTime.DateTime.ToOADate());
+
+            var score = message.DateTime.DateTime.ToOADate();
+            database.SortedSetAdd(RedisKey, rv, score);
         }
 
         public async Task<Message> DequeueNextScheduledMessage()

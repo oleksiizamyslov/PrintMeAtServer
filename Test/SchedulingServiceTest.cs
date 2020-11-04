@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
+using Core.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;

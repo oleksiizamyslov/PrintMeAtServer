@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Core.Data;
 using Core.Interfaces;
+using Core.Models;
 
 namespace Core.Impl
 {
@@ -13,7 +13,7 @@ namespace Core.Impl
 
         public Task Process(Message message)
         {
-            Console.WriteLine(message.Text);
+            Console.WriteLine(message.MessageText);
 
             return Task.CompletedTask;
         }

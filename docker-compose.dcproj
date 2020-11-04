@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>292a8c21-09a6-4023-9044-556a52fec514</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/api/printme</DockerServiceUrl>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/api/printmeat</DockerServiceUrl>
     <DockerServiceName>printmeatserver</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>

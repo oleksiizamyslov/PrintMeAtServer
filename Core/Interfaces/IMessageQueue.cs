@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Core.Data;
+using Core.Models;
 
 namespace Core.Interfaces
 {
