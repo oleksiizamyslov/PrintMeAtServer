@@ -1,4 +1,5 @@
 using Core;
+using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +29,7 @@ namespace PrintMeAtServer
             services.AddTransient<IRedisConfiguration, RedisConfiguration>();
             services.AddTransient<IPrintMeAtService, PrintMeAtService>();
             services.AddTransient<IMessageSerializer, MessageSerializer>();
-            services.AddTransient<IMessageQueue, PersistentRedisMessageQueue>();
+            services.AddTransient<IMessageQueue, RedisMessageQueue>();
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
             services.AddTransient<ITimerFactory, TimerFactory>();
 

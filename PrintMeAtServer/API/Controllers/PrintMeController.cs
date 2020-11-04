@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using Core;
+﻿using System.Threading.Tasks;
 using Core.Data;
-using Core.Impl;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,15 +16,15 @@ namespace PrintMeAtServer.API.Controllers
             _printMeService = printMeService;
         }
 
-        public async Task<ActionResult<string>> PrintMe(DateTimeOffset dateTime, string message)
+        public async Task<ActionResult<string>> PrintMe([FromQuery] Message message)
         {
-            var newMessage = new Message(dateTime, message);
-            if (message != null)
+            if (!ModelState.IsValid)
             {
-                await _printMeService.EnqueueMessage(newMessage);
+                return BadRequest(ModelState);
             }
+            await _printMeService.EnqueueMessage(message);
 
-            return $"Scheduled at \r\n {SimpleMessageProcessor.Str}";
+            return Ok();
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using Core;
 using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
@@ -10,7 +9,7 @@ using Test.Infrastructure;
 
 namespace Test
 {
-    public class SchedulingIntegrationTests
+    public class IntegrationTests
     {
         private static readonly DateTimeOffset _offsetBefore = DateTimeOffset.Now;
         private static readonly DateTimeOffset _offset1 = _offsetBefore.AddMilliseconds(10);
