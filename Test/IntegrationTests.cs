@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -28,7 +29,7 @@ namespace Test
 
         private async Task<IPrintMeAtService> InitializeService(IMessageQueue messageQueue, IDateTimeProvider dto)
         {
-            _schedulingService = new SchedulingService(messageQueue, _messageProcessor.Object, dto, new TimerFactory(dto));
+            _schedulingService = new SchedulingService(messageQueue, _messageProcessor.Object, dto, new TimerFactory(dto), new Mock<ILogger<ISchedulingService>>().Object);
             await _schedulingService.Initialize();
             return new PrintMeAtService(messageQueue, _schedulingService);
         }
@@ -49,9 +50,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Immediately_Print_Outdated_Messages_When_Starting_Up()
+        public async Task Should_Immediately_Print_Outdated_Messages_When_Starting_Up()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             await mq.EnqueueMessage(_message1);
             await mq.EnqueueMessage(_message2);
@@ -66,9 +67,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Schedule_And_Print_Messages_In_Batches()
+        public async Task Should_Schedule_And_Print_Messages_In_Batches()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
@@ -90,9 +91,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Schedule_And_Print_Messages_As_Scheduled_Regardless_Of_Adding_Order()
+        public async Task Should_Schedule_And_Print_Messages_As_Scheduled_Regardless_Of_Adding_Order()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
@@ -113,9 +114,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Schedule_And_Print_Messages_One_By_One()
+        public async Task Should_Schedule_And_Print_Messages_One_By_One()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
@@ -136,9 +137,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Immediately_Print_Messages_In_The_Past()
+        public async Task Should_Immediately_Print_Messages_In_The_Past()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetAfter);
 
@@ -154,9 +155,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Schedule_And_Print_Messages_Scheduled_For_Same_Time()
+        public async Task Should_Schedule_And_Print_Messages_Scheduled_For_Same_Time()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 
@@ -175,9 +176,9 @@ namespace Test
         }
 
         [Test]
-        public async void Should_Reschedule_When_Front_Of_The_Queue_Is_Found_To_Be_In_The_Future_On_Processing()
+        public async Task Should_Reschedule_When_Front_Of_The_Queue_Is_Found_To_Be_In_The_Future_On_Processing()
         {
-            TestMessageQueue mq = new TestMessageQueue();
+            InMemoryMessageQueue mq = new InMemoryMessageQueue();
 
             var mockProvider = new MockDateTimeProvider(_offsetBefore);
 

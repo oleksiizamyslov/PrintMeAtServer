@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Data;
 using Core.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Core.Impl
 {
@@ -16,15 +17,21 @@ namespace Core.Impl
         private readonly IMessageQueue _messageQueue;
         private readonly IMessageProcessor _messageProcessor;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ILogger<ISchedulingService> _logger;
         private readonly IOneOffTimer _timer;
 
         private readonly SemaphoreSlim _queueHeadScheduleLock = new SemaphoreSlim(1);
 
-        public SchedulingService(IMessageQueue messageQueue, IMessageProcessor messageProcessor, IDateTimeProvider dateTimeProvider, ITimerFactory timerFactory)
+        public SchedulingService(IMessageQueue messageQueue, 
+            IMessageProcessor messageProcessor, 
+            IDateTimeProvider dateTimeProvider, 
+            ITimerFactory timerFactory, 
+            ILogger<ISchedulingService> logger)
         {
             _messageQueue = messageQueue;
             _messageProcessor = messageProcessor;
             _dateTimeProvider = dateTimeProvider;
+            _logger = logger;
             _timer = timerFactory.Create(ProcessNextMessage);
         }
 
@@ -51,6 +58,7 @@ namespace Core.Impl
                     await _queueHeadScheduleLock.WaitAsync(LOCK_TIMEOUT);
                     if (newMessageOffset < _timer.CurrentlyScheduledTime)
                     {
+                        _logger.LogDebug($"Next scheduled processing changed to {newMessageOffset}");
                         _timer.Reschedule(newMessageOffset);
                     }
                 }
@@ -82,11 +90,13 @@ namespace Core.Impl
                     if (message.DateTime > _dateTimeProvider.Now)
                     {
                         // Reschedule. Happens in case of dates far in the future.
+                        _logger.LogDebug($"Rescheduling {message}");
                         await ScheduleProcessing(message.DateTime);
                         return;
                     }
 
                     message = await _messageQueue.DequeueNextScheduledMessage();
+                    _logger.LogDebug($"Processing {message}");
                     await _messageProcessor.Process(message);
                 }
 

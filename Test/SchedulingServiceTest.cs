@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Castle.Core.Logging;
 using Core.Data;
 using Core.Impl;
 using Core.Interfaces;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -35,7 +37,7 @@ namespace Test
             var mq = new Mock<IMessageQueue>();
 
             SchedulingService ss = new SchedulingService(mq.Object, new SimpleMessageProcessor(),
-                new DateTimeProvider(), _timerFactory);
+                new DateTimeProvider(), _timerFactory, new Mock<ILogger<ISchedulingService>>().Object);
 
             await ss.Initialize();
 
@@ -51,7 +53,7 @@ namespace Test
             mq.Setup(p => p.PeekNextScheduledMessage()).ReturnsAsync(new Message(dto, "test"));
 
             SchedulingService ss = new SchedulingService(mq.Object, new SimpleMessageProcessor(),
-                new DateTimeProvider(), _timerFactory);
+                new DateTimeProvider(), _timerFactory, new Mock<ILogger<ISchedulingService>>().Object);
 
             await ss.Initialize();
 
@@ -67,7 +69,7 @@ namespace Test
             mq.Setup(p => p.PeekNextScheduledMessage()).ReturnsAsync(new Message(dto, "test"));
 
             SchedulingService ss = new SchedulingService(mq.Object, new SimpleMessageProcessor(),
-                new DateTimeProvider(), _timerFactory);
+                new DateTimeProvider(), _timerFactory, new Mock<ILogger<ISchedulingService>>().Object);
             await ss.Initialize();
 
             await ss.ScheduleProcessing(dtoBefore);
@@ -85,7 +87,7 @@ namespace Test
             mq.Setup(p => p.PeekNextScheduledMessage()).ReturnsAsync(new Message(dto, "test"));
 
             SchedulingService ss = new SchedulingService(mq.Object, new SimpleMessageProcessor(),
-                new DateTimeProvider(), _timerFactory);
+                new DateTimeProvider(), _timerFactory, new Mock<ILogger<ISchedulingService>>().Object);
             await ss.Initialize();
 
             await ss.ScheduleProcessing(dtoLater);

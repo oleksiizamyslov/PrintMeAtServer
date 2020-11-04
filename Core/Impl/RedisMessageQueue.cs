@@ -47,7 +47,6 @@ namespace Core.Impl
             }
 
             var value = keys.Single();
-            
             var serialized = value.ToString();
             var message = await _serializer.Deserialize(serialized);
             if (pop)

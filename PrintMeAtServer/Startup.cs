@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace PrintMeAtServer
@@ -40,7 +41,8 @@ namespace PrintMeAtServer
                     sp.GetService<IMessageQueue>(), 
                     sp.GetService<IMessageProcessor>(),
                     sp.GetService<IDateTimeProvider>(),
-                    sp.GetService<ITimerFactory>());
+                    sp.GetService<ITimerFactory>(),
+                    sp.GetService<ILogger<SchedulingService>>());
                 ret.Initialize().GetAwaiter().GetResult();
                 return ret;
             });
@@ -55,7 +57,7 @@ namespace PrintMeAtServer
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
