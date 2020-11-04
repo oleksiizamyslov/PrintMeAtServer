@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Core;
+using Core.Data;
 
-namespace PrintMeAtServer
+namespace Core.Interfaces
 {
     public interface IMessageProcessor
     {

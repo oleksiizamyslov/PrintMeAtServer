@@ -1,5 +1,5 @@
-using System.Threading.Tasks;
 using Core;
+using Core.Impl;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +22,7 @@ namespace PrintMeAtServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<IMessageProcessor, MessageProcessor>();
+            services.AddTransient<IMessageProcessor, SimpleMessageProcessor>();
             
             services.AddTransient<IServerConfiguration, ServerConfiguration>();
             services.AddTransient<IRedisConfiguration, RedisConfiguration>();
@@ -30,6 +30,7 @@ namespace PrintMeAtServer
             services.AddTransient<IMessageSerializer, MessageSerializer>();
             services.AddTransient<IMessageQueue, PersistentRedisMessageQueue>();
             services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+            services.AddTransient<ITimerFactory, TimerFactory>();
 
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             services.AddSingleton<ISchedulingService, SchedulingService>(sp =>

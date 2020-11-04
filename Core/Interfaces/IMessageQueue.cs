@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Core.Data;
 
-namespace Core
+namespace Core.Interfaces
 {
     public interface IMessageQueue
     {

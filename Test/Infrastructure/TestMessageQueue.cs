@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
-using Core.DataStructures;
+using Core.Data;
+using Core.Interfaces;
 
 namespace Test.Infrastructure
 {

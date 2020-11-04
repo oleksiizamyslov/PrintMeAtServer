@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace Core
+namespace Core.Interfaces
 {
     public interface IRedisConnectionFactory
     {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Core;
+using Core.Data;
+using Core.Impl;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +27,7 @@ namespace PrintMeAtServer.API.Controllers
                 await _printMeService.EnqueueMessage(newMessage);
             }
 
-            return $"Scheduled at \r\n {MessageProcessor.Str}";
+            return $"Scheduled at \r\n {SimpleMessageProcessor.Str}";
         }
     }
 }

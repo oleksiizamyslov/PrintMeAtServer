@@ -1,7 +1,7 @@
 using System;
-using Core;
+using Core.Interfaces;
 
-namespace Test
+namespace Test.Infrastructure
 {
     public class MockDateTimeProvider : IDateTimeProvider
     {

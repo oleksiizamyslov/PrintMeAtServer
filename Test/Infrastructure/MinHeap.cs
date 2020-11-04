@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Core.DataStructures
+namespace Test.Infrastructure
 {
     /// <summary>
     /// Array-based Heap implementation.

@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Core.Interfaces
 {
     /// <summary>
     /// All redis specific settings go here.

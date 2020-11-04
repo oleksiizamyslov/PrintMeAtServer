@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Core.Interfaces
 {
     /// <summary>
     /// All global app settings related to core functionality go here.
